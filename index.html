@@ -283,6 +283,76 @@
       font-weight: 800;
     }
 
+    .douyin-section {
+      background:
+        linear-gradient(180deg, rgba(244, 247, 247, .94), rgba(244, 247, 247, .98)),
+        url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=80") center / cover;
+    }
+
+    .douyin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .douyin-card {
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      border: 1px solid rgba(16, 33, 42, .12);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(7, 18, 22, .12), rgba(7, 18, 22, .88)),
+        url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=85") center / cover;
+      color: var(--white);
+      text-decoration: none;
+      box-shadow: var(--shadow);
+    }
+
+    .douyin-card:nth-child(2) {
+      background:
+        linear-gradient(180deg, rgba(7, 18, 22, .1), rgba(7, 18, 22, .88)),
+        url("https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=1200&q=85") center / cover;
+    }
+
+    .douyin-card:nth-child(3) {
+      background:
+        linear-gradient(180deg, rgba(7, 18, 22, .1), rgba(7, 18, 22, .88)),
+        url("https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=1200&q=85") center / cover;
+    }
+
+    .douyin-badge {
+      width: fit-content;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .28);
+      color: var(--ice);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .douyin-card h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.12;
+    }
+
+    .douyin-card p {
+      margin: 0;
+      color: #dcebed;
+    }
+
+    .source-note {
+      margin-top: 16px;
+      color: #5b7078;
+      font-size: 13px;
+    }
+
     .itinerary-band {
       background:
         linear-gradient(180deg, #071216, #102128 42%, #eef5f7 42%);
@@ -536,7 +606,7 @@
 
     @media (max-width: 960px) {
       nav { display: none; }
-      .hero-stats, .programs, .why, .signup, .itinerary { grid-template-columns: 1fr; }
+      .hero-stats, .programs, .douyin-grid, .why, .signup, .itinerary { grid-template-columns: 1fr; }
       .pitch { position: static; min-height: 340px; }
       .section-head { display: block; }
       .section-head p { margin-top: 12px; }
@@ -560,6 +630,7 @@
     <div class="brand"><span class="mark">SN</span> Sichuan Snow Peaks</div>
     <nav aria-label="Main navigation">
       <a href="#peaks">Peaks</a>
+      <a href="#douyin">Douyin</a>
       <a href="#itinerary">4-Day Plan</a>
       <a href="#insurance">Insurance</a>
       <a href="#apply">Apply</a>
@@ -611,6 +682,37 @@
           </div>
         </article>
       </div>
+    </section>
+
+    <section id="douyin" class="douyin-section">
+      <div class="section-head">
+        <h2>See how Autaina looks in real Chinese outdoor videos.</h2>
+        <p>We link to public Douyin posts so clients can feel the real route atmosphere, while keeping creator videos on their original platform.</p>
+      </div>
+      <div class="douyin-grid">
+        <a class="douyin-card" href="https://www.douyin.com/shipin/7297954014670047284" target="_blank" rel="noopener">
+          <span class="douyin-badge">Douyin guide</span>
+          <div>
+            <h3>Autaina climbing guide videos</h3>
+            <p>Route tips, beginner questions, gear advice, guide model, and summit stories from Chinese outdoor creators.</p>
+          </div>
+        </a>
+        <a class="douyin-card" href="https://jingxuan.douyin.com/m/video/7546498846547135802" target="_blank" rel="noopener">
+          <span class="douyin-badge">Field vlog</span>
+          <div>
+            <h3>Your first snow mountain</h3>
+            <p>A public Douyin feature presenting Autaina as a memorable first snow mountain experience.</p>
+          </div>
+        </a>
+        <a class="douyin-card" href="https://jingxuan.douyin.com/m/video/7571362639126039163" target="_blank" rel="noopener">
+          <span class="douyin-badge">Safety reality</span>
+          <div>
+            <h3>Beautiful, but not effortless</h3>
+            <p>A useful reality-check video: Autaina is beginner-friendly for many climbers, but still requires fitness and respect.</p>
+          </div>
+        </a>
+      </div>
+      <p class="source-note">Video links open on Douyin/Jingxuan Douyin. We do not download or re-host creator videos without permission.</p>
     </section>
 
     <section id="itinerary" class="itinerary-band">
