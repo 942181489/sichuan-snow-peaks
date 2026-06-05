@@ -35,7 +35,31 @@ orders as CSV files that open in Excel.
 
 For a China-registered company, use a merchant payment product such as WeChat
 Pay or Alipay. This project currently includes WeChat Pay API v3 Native QR order
-creation and webhook handling.
+creation, Alipay computer website payment, and webhook/notify handling.
+
+## Shopify checkout option
+
+Scheme A uses Shopify as the payment checkout, not as a standalone payment API.
+The website saves the application and local order first, then redirects the
+customer to a Shopify cart/checkout permalink.
+
+Create deposit products in Shopify, then set:
+
+```powershell
+$env:SHOPIFY_DEPOSIT_250_URL="https://sk0uvj-g2.myshopify.com/cart/49165438550268:1"
+$env:SHOPIFY_DEPOSIT_300_URL="https://sk0uvj-g2.myshopify.com/cart/49165438484732:1"
+```
+
+Recommended Shopify products:
+
+```text
+Sichuan Snow Peaks Deposit - USD 250
+Sichuan Snow Peaks Deposit - USD 300
+```
+
+Payment success is recorded in Shopify. Until a Shopify webhook is configured,
+mark the local order as paid from the admin dashboard after confirming the
+Shopify order.
 
 Set these environment variables before starting the server:
 
@@ -55,6 +79,25 @@ Configure the WeChat Pay notify URL as:
 ```text
 https://your-real-https-domain.example/api/wechatpay/notify
 ```
+
+For Alipay computer website payment, set:
+
+```powershell
+$env:ALIPAY_APP_ID="your_alipay_app_id"
+$env:ALIPAY_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+$env:ALIPAY_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+$env:ALIPAY_GATEWAY="https://openapi.alipay.com/gateway.do"
+```
+
+Configure the Alipay async notify URL:
+
+```text
+https://your-real-https-domain.example/api/alipay/notify
+```
+
+The site creates an `alipay.trade.page.pay` order and redirects customers to
+Alipay's secure payment page. When Alipay sends a verified notify request with
+`TRADE_SUCCESS` or `TRADE_FINISHED`, the backend marks the order as `paid`.
 
 If WeChat Pay variables are not configured, the website still saves the
 application and order, then asks the operator to confirm payment manually.
@@ -100,6 +143,12 @@ WECHAT_PAY_APP_ID=...
 WECHAT_PAY_CERT_SERIAL_NO=...
 WECHAT_PAY_API_V3_KEY=...
 WECHAT_PAY_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
+ALIPAY_APP_ID=...
+ALIPAY_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
+ALIPAY_PUBLIC_KEY=-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----
+ALIPAY_GATEWAY=https://openapi.alipay.com/gateway.do
+SHOPIFY_DEPOSIT_250_URL=https://sk0uvj-g2.myshopify.com/cart/49165438550268:1
+SHOPIFY_DEPOSIT_300_URL=https://sk0uvj-g2.myshopify.com/cart/49165438484732:1
 ```
 
 Then configure WeChat Pay notify URL:

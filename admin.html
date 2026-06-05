@@ -168,7 +168,7 @@
       <table>
         <thead>
           <tr>
-            <th>Created</th><th>Name</th><th>Country</th><th>Contact</th><th>Peak</th><th>Dates</th><th>Paid</th>
+            <th>Created</th><th>Name</th><th>Country</th><th>Contact</th><th>Peak</th><th>Dates</th><th>Guests</th><th>Paid</th>
           </tr>
         </thead>
         <tbody id="applications"></tbody>
@@ -199,6 +199,15 @@
     const authHeaders = () => ({ Authorization: `Bearer ${tokenInput.value}` });
     const cny = (value) => `RMB ${(Number(value || 0) / 100).toFixed(2)}`;
     const date = (value) => value ? new Date(value).toLocaleString() : "";
+    const formatGuests = (value) => {
+      try {
+        const guests = JSON.parse(value || "[]");
+        if (!guests.length) return "";
+        return guests.map((guest, index) => `${index + 1}. ${guest.name || "Guest"} ${guest.email || ""} ${guest.phone || ""}`).join("<br>");
+      } catch {
+        return value || "";
+      }
+    };
 
     function setExportLinks() {
       const token = encodeURIComponent(tokenInput.value);
@@ -225,6 +234,7 @@
           <td data-label="Contact">${app.email}<br>${app.phone}</td>
           <td data-label="Peak">${app.peak || ""}</td>
           <td data-label="Dates">${app.dates || ""}</td>
+          <td data-label="Guests">${formatGuests(app.guests)}</td>
           <td data-label="Paid">${cny(app.paid_cny)}</td>
         </tr>
       `).join("");

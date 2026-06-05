@@ -20,6 +20,18 @@ services:
         sync: false
       - key: WECHAT_PAY_PRIVATE_KEY
         sync: false
+      - key: ALIPAY_APP_ID
+        sync: false
+      - key: ALIPAY_PRIVATE_KEY
+        sync: false
+      - key: ALIPAY_PUBLIC_KEY
+        sync: false
+      - key: ALIPAY_GATEWAY
+        value: https://openapi.alipay.com/gateway.do
+      - key: SHOPIFY_DEPOSIT_250_URL
+        value: https://sk0uvj-g2.myshopify.com/cart/49165438550268:1
+      - key: SHOPIFY_DEPOSIT_300_URL
+        value: https://sk0uvj-g2.myshopify.com/cart/49165438484732:1
     disk:
       name: snow-peaks-data
       mountPath: /data

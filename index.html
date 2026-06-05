@@ -560,6 +560,37 @@
 
     .signup .note { color: #52666e; }
 
+    .guest-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .guest-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 12px;
+      border: 1px solid #d5e0e4;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .68);
+    }
+
+    .guest-row input {
+      min-width: 0;
+    }
+
+    .guest-remove {
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid #d0dce0;
+      border-radius: 8px;
+      background: #fbfdfd;
+      color: #31464d;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
     .payment-choice {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -618,6 +649,7 @@
       .topbar .button { display: none; }
       .hero { min-height: 92vh; padding-top: 92px; }
       .hero-stats div { min-height: auto; }
+      .guest-row { grid-template-columns: 1fr; }
       .day { grid-template-columns: 1fr; gap: 8px; }
       .form-grid { grid-template-columns: 1fr; }
       .payment-choice { grid-template-columns: 1fr; }
@@ -804,7 +836,29 @@
             <input type="text" name="name" placeholder="Your name" required>
           </label>
           <label>Country / region
-            <input type="text" name="country" placeholder="Singapore, Malaysia, Thailand..." required>
+            <select name="country" required>
+              <option value="">Select country / region</option>
+              <option>Singapore</option>
+              <option>Malaysia</option>
+              <option>Thailand</option>
+              <option>Indonesia</option>
+              <option>Vietnam</option>
+              <option>Philippines</option>
+              <option>Brunei</option>
+              <option>Cambodia</option>
+              <option>Laos</option>
+              <option>Myanmar</option>
+              <option>Hong Kong SAR</option>
+              <option>Macau SAR</option>
+              <option>Taiwan</option>
+              <option>China Mainland</option>
+              <option>Australia</option>
+              <option>New Zealand</option>
+              <option>United States</option>
+              <option>United Kingdom</option>
+              <option>Canada</option>
+              <option>Other</option>
+            </select>
           </label>
           <label>Email
             <input type="email" name="email" placeholder="you@example.com" required>
@@ -814,15 +868,22 @@
           </label>
           <label>Preferred peak
             <select name="peak">
-              <option>Help me choose</option>
               <option>Autaina Peak</option>
               <option>Sawu Sacred Mountain</option>
-              <option>Both options</option>
             </select>
           </label>
-          <label>Travel window
-            <input type="text" name="dates" placeholder="Example: Oct 2026 or flexible">
+          <label>Travel start date
+            <input type="date" name="dateStart">
+            <input type="hidden" name="dates">
           </label>
+          <div class="full">
+            <label>Additional guests
+              <input type="hidden" name="guests">
+            </label>
+            <div id="guest-list" class="guest-list"></div>
+            <button id="add-guest" class="guest-remove" type="button">Add guest</button>
+            <p class="note">Add each extra traveler joining this application. Leave blank for solo booking.</p>
+          </div>
           <label class="full">Experience and insurance status
             <textarea name="message" placeholder="Tell us your hiking/climbing experience, fitness level, and whether you already have high-altitude travel insurance."></textarea>
           </label>
@@ -830,21 +891,20 @@
             <legend style="margin-bottom:7px;color:#31464d;font-size:13px;font-weight:850">Next step</legend>
             <div class="payment-choice">
               <label><input type="radio" name="paymentOption" value="inquiry" checked> Submit inquiry only</label>
-              <label><input type="radio" name="paymentOption" value="deposit_1500"> Reserve with RMB 1,500</label>
-              <label><input type="radio" name="paymentOption" value="deposit_3500"> Reserve with RMB 3,500</label>
+              <label><input type="radio" name="paymentOption" value="deposit_250"> Reserve with USD 250</label>
+              <label><input type="radio" name="paymentOption" value="deposit_300"> Reserve with USD 300</label>
             </div>
           </fieldset>
           <fieldset class="full" style="border:0;padding:0;margin:0">
             <legend style="margin-bottom:7px;color:#31464d;font-size:13px;font-weight:850">Payment method</legend>
             <div class="payment-choice">
               <label><input type="radio" name="paymentProvider" value="manual" checked> Manual confirmation</label>
-              <label><input type="radio" name="paymentProvider" value="wechat_native"> WeChat Pay QR</label>
-              <label><input type="radio" name="paymentProvider" value="alipay_manual"> Alipay company QR</label>
+              <label><input type="radio" name="paymentProvider" value="shopify_checkout"> Pay deposit online</label>
             </div>
           </fieldset>
           <div class="full">
             <button id="submit-button" class="button" type="submit">Submit Application</button>
-            <p class="note">For a China-registered company, deposits are recorded in our backend database and confirmed through WeChat Pay, Alipay, or bank transfer. Card numbers are never stored here.</p>
+            <p class="note">Deposits are recorded in our backend database. Online payments are handled securely by Shopify; card numbers are never stored here.</p>
           </div>
         </div>
       </form>
@@ -859,6 +919,8 @@
     const applicationForm = document.querySelector("#application-form");
     const formStatus = document.querySelector("#form-status");
     const submitButton = document.querySelector("#submit-button");
+    const guestList = document.querySelector("#guest-list");
+    const addGuestButton = document.querySelector("#add-guest");
 
     const showStatus = (message, isError = false) => {
       formStatus.textContent = message;
@@ -873,13 +935,43 @@
       showStatus("Payment was cancelled. Your application is still saved.", true);
     }
 
+    const addGuestRow = () => {
+      const row = document.createElement("div");
+      row.className = "guest-row";
+      row.innerHTML = `
+        <label>Guest name
+          <input type="text" data-guest-field="name" placeholder="Guest full name">
+        </label>
+        <label>Email
+          <input type="email" data-guest-field="email" placeholder="guest@example.com">
+        </label>
+        <label>WhatsApp / phone
+          <input type="tel" data-guest-field="phone" placeholder="+65 / +60 / +66 ...">
+        </label>
+        <button class="guest-remove" type="button">Remove</button>
+      `;
+      row.querySelector("button").addEventListener("click", () => row.remove());
+      guestList.appendChild(row);
+    };
+
+    addGuestButton.addEventListener("click", addGuestRow);
+
     applicationForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       submitButton.disabled = true;
       submitButton.textContent = "Submitting...";
 
       try {
-        const payload = Object.fromEntries(new FormData(applicationForm).entries());
+        const formData = new FormData(applicationForm);
+        const dateStart = formData.get("dateStart");
+        const guests = [...guestList.querySelectorAll(".guest-row")].map((row) => ({
+          name: row.querySelector('[data-guest-field="name"]').value.trim(),
+          email: row.querySelector('[data-guest-field="email"]').value.trim(),
+          phone: row.querySelector('[data-guest-field="phone"]').value.trim()
+        })).filter((guest) => guest.name || guest.email || guest.phone);
+        formData.set("dates", dateStart || "");
+        formData.set("guests", JSON.stringify(guests));
+        const payload = Object.fromEntries(formData.entries());
         const response = await fetch("/api/applications", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -889,11 +981,16 @@
 
         if (!response.ok) throw new Error(result.error || "Unable to submit application.");
         if (result.codeUrl) {
-          showStatus(`Application saved. Order ${result.orderId} for RMB ${result.amountCny}. WeChat Pay QR link: ${result.codeUrl}`);
+          showStatus(`Application saved. Order ${result.orderId} for ${result.amountLabel || `RMB ${result.amountCny}`}. Payment link: ${result.codeUrl}`);
+          return;
+        }
+        if (result.paymentUrl) {
+          window.location.href = result.paymentUrl;
           return;
         }
 
         applicationForm.reset();
+        guestList.innerHTML = "";
         showStatus(result.message || "Application saved. We will contact you with dates, price, and insurance guidance.");
       } catch (error) {
         showStatus(error.message, true);

@@ -24,6 +24,7 @@ db.exec(`
     phone TEXT NOT NULL,
     peak TEXT,
     dates TEXT,
+    guests TEXT,
     message TEXT,
     status TEXT NOT NULL DEFAULT 'new'
   );
@@ -43,10 +44,22 @@ db.exec(`
   );
 `);
 
+const applicationColumns = db.prepare("PRAGMA table_info(applications)").all().map((column) => column.name);
+if (!applicationColumns.includes("guests")) {
+  db.exec("ALTER TABLE applications ADD COLUMN guests TEXT");
+}
+
 const deposits = {
   inquiry: null,
-  deposit_1500: 150000,
-  deposit_3500: 350000
+  deposit_250: { amount: 25000, currency: "USD" },
+  deposit_300: { amount: 30000, currency: "USD" },
+  deposit_1500: { amount: 150000, currency: "CNY" },
+  deposit_3500: { amount: 350000, currency: "CNY" }
+};
+
+const defaultShopifyUrls = {
+  deposit_250: "https://sk0uvj-g2.myshopify.com/cart/49165438550268:1",
+  deposit_300: "https://sk0uvj-g2.myshopify.com/cart/49165438484732:1"
 };
 
 function sendJson(res, status, body) {
@@ -61,6 +74,10 @@ function sendText(res, status, body, contentType = "text/plain; charset=utf-8") 
 
 function yuan(cents) {
   return (cents / 100).toFixed(2);
+}
+
+function money(amount, currency) {
+  return `${currency} ${(amount / 100).toFixed(2)}`;
 }
 
 async function readRaw(req, limit = 500000) {
@@ -94,8 +111,8 @@ function createApplication(input) {
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   db.prepare(`
-    INSERT INTO applications (id, created_at, name, country, email, phone, peak, dates, message, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
+    INSERT INTO applications (id, created_at, name, country, email, phone, peak, dates, guests, message, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
   `).run(
     id,
     now,
@@ -105,6 +122,7 @@ function createApplication(input) {
     String(input.phone || "").trim(),
     String(input.peak || "Help me choose").trim(),
     String(input.dates || "").trim(),
+    String(input.guests || "").trim(),
     String(input.message || "").trim()
   );
   return { id, created_at: now };
@@ -117,7 +135,7 @@ function createOrder(applicationId, provider, amountCny, status = "pending", pro
     INSERT INTO orders (id, application_id, created_at, provider, amount_cny, status, provider_payload)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(id, applicationId, now, provider, amountCny, status, providerPayload ? JSON.stringify(providerPayload) : null);
-  return { id, created_at: now, amount_cny: amountCny, status, provider };
+  return { id, application_id: applicationId, created_at: now, amount_cny: amountCny, status, provider };
 }
 
 function loadPrivateKey() {
@@ -136,6 +154,46 @@ function wechatPayReady() {
     loadPrivateKey() &&
     process.env.WECHAT_PAY_API_V3_KEY
   );
+}
+
+function loadAlipayPrivateKey() {
+  const keyPath = process.env.ALIPAY_PRIVATE_KEY_PATH;
+  const keyText = process.env.ALIPAY_PRIVATE_KEY;
+  if (keyText) return keyText.replaceAll("\\n", "\n");
+  if (keyPath) return fs.readFileSync(keyPath, "utf8");
+  return null;
+}
+
+function loadAlipayPublicKey() {
+  const keyPath = process.env.ALIPAY_PUBLIC_KEY_PATH;
+  const keyText = process.env.ALIPAY_PUBLIC_KEY;
+  if (keyText) return keyText.replaceAll("\\n", "\n");
+  if (keyPath) return fs.readFileSync(keyPath, "utf8");
+  return null;
+}
+
+function alipayReady() {
+  return Boolean(process.env.ALIPAY_APP_ID && loadAlipayPrivateKey() && loadAlipayPublicKey());
+}
+
+function sortedQuery(params, includeSign = false) {
+  return Object.entries(params)
+    .filter(([key, value]) => value !== undefined && value !== null && value !== "" && (includeSign || (key !== "sign" && key !== "sign_type")))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+}
+
+function signAlipay(params) {
+  return crypto.createSign("RSA-SHA256").update(sortedQuery(params)).sign(loadAlipayPrivateKey(), "base64");
+}
+
+function verifyAlipayNotify(params) {
+  const publicKey = loadAlipayPublicKey();
+  if (!publicKey) throw new Error("ALIPAY_PUBLIC_KEY is not configured.");
+  const signature = params.sign;
+  if (!signature) throw new Error("Missing Alipay signature.");
+  return crypto.createVerify("RSA-SHA256").update(sortedQuery(params)).verify(publicKey, signature, "base64");
 }
 
 function signWechat(method, urlPath, body) {
@@ -183,6 +241,64 @@ async function createWechatNativePayment(order, application) {
   return { configured: true, codeUrl: payload.code_url };
 }
 
+function createAlipayPagePayment(order) {
+  if (!alipayReady()) {
+    return {
+      configured: false,
+      message: "Alipay is not configured yet. Order saved for manual confirmation."
+    };
+  }
+
+  const gateway = process.env.ALIPAY_GATEWAY || "https://openapi.alipay.com/gateway.do";
+  const bizContent = {
+    out_trade_no: order.id,
+    total_amount: yuan(order.amount_cny),
+    subject: "Sichuan Snow Peaks expedition deposit",
+    product_code: "FAST_INSTANT_TRADE_PAY",
+    passback_params: order.application_id
+  };
+  const params = {
+    app_id: process.env.ALIPAY_APP_ID,
+    method: "alipay.trade.page.pay",
+    format: "JSON",
+    charset: "utf-8",
+    sign_type: "RSA2",
+    timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
+    version: "1.0",
+    return_url: `${publicBaseUrl}/?payment=success#apply`,
+    notify_url: `${publicBaseUrl}/api/alipay/notify`,
+    biz_content: JSON.stringify(bizContent)
+  };
+  params.sign = signAlipay(params);
+  const paymentUrl = `${gateway}?${new URLSearchParams(params).toString()}`;
+  db.prepare("UPDATE orders SET provider_payload = ? WHERE id = ?").run(JSON.stringify({ paymentUrl }), order.id);
+  return { configured: true, paymentUrl };
+}
+
+function createShopifyCheckout(order, paymentOption) {
+  const url = process.env.SHOPIFY_DEPOSIT_250_URL && paymentOption === "deposit_250"
+    ? process.env.SHOPIFY_DEPOSIT_250_URL
+    : process.env.SHOPIFY_DEPOSIT_300_URL && paymentOption === "deposit_300"
+      ? process.env.SHOPIFY_DEPOSIT_300_URL
+      : defaultShopifyUrls[paymentOption];
+
+  if (!url) {
+    return {
+      configured: false,
+      message: "Shopify checkout link is not configured yet. Order saved for manual confirmation."
+    };
+  }
+
+  const paymentUrl = new URL(url);
+  paymentUrl.searchParams.set("attributes[site_order_id]", order.id);
+  paymentUrl.searchParams.set("attributes[application_id]", order.application_id);
+  paymentUrl.searchParams.set("note", `Sichuan Snow Peaks order ${order.id}`);
+  db.prepare("UPDATE orders SET provider_payload = ? WHERE id = ?")
+    .run(JSON.stringify({ paymentUrl: paymentUrl.toString() }), order.id);
+
+  return { configured: true, paymentUrl: paymentUrl.toString() };
+}
+
 function decryptWechatResource(resource) {
   const apiV3Key = process.env.WECHAT_PAY_API_V3_KEY;
   if (!apiV3Key) throw new Error("WECHAT_PAY_API_V3_KEY is not configured.");
@@ -206,9 +322,9 @@ async function handleApplication(req, res) {
 
     const app = createApplication(input);
     const paymentOption = String(input.paymentOption || "inquiry");
-    const amount = deposits[paymentOption];
+    const deposit = deposits[paymentOption];
 
-    if (!amount) {
+    if (!deposit) {
       return sendJson(res, 201, {
         applicationId: app.id,
         message: "Application saved. We will contact you with dates, price, insurance, and payment instructions."
@@ -216,7 +332,7 @@ async function handleApplication(req, res) {
     }
 
     const provider = String(input.paymentProvider || "manual");
-    const order = createOrder(app.id, provider, amount);
+    const order = createOrder(app.id, provider, deposit.amount);
     const application = { id: app.id, email: input.email, name: input.name };
 
     if (provider === "wechat_native") {
@@ -224,22 +340,79 @@ async function handleApplication(req, res) {
       return sendJson(res, 201, {
         applicationId: app.id,
         orderId: order.id,
-        amountCny: yuan(amount),
+        amountCny: yuan(deposit.amount),
+        amountLabel: money(deposit.amount, deposit.currency),
         paymentProvider: provider,
         codeUrl: wechat.codeUrl,
         message: wechat.configured ? "Scan the WeChat Pay QR code to pay." : wechat.message
       });
     }
 
+    if (provider === "alipay_page") {
+      const alipay = createAlipayPagePayment(order);
+      return sendJson(res, 201, {
+        applicationId: app.id,
+        orderId: order.id,
+        amountCny: yuan(deposit.amount),
+        amountLabel: money(deposit.amount, deposit.currency),
+        paymentProvider: provider,
+        paymentUrl: alipay.paymentUrl,
+        message: alipay.configured ? "Redirecting to Alipay secure payment page." : alipay.message
+      });
+    }
+
+    if (provider === "shopify_checkout") {
+      const shopify = createShopifyCheckout(order, paymentOption);
+      return sendJson(res, 201, {
+        applicationId: app.id,
+        orderId: order.id,
+        amountCny: yuan(deposit.amount),
+        amountLabel: money(deposit.amount, deposit.currency),
+        paymentProvider: provider,
+        paymentUrl: shopify.paymentUrl,
+        message: shopify.configured ? "Redirecting to Shopify secure checkout." : shopify.message
+      });
+    }
+
     return sendJson(res, 201, {
       applicationId: app.id,
       orderId: order.id,
-      amountCny: yuan(amount),
+      amountCny: yuan(deposit.amount),
+      amountLabel: money(deposit.amount, deposit.currency),
       paymentProvider: provider,
       message: "Order saved. We will send a company payment QR code or bank transfer details after confirming availability."
     });
   } catch (error) {
     return sendJson(res, 500, { error: error.message });
+  }
+}
+
+async function handleAlipayNotify(req, res) {
+  try {
+    const raw = (await readRaw(req)).toString("utf8");
+    const params = Object.fromEntries(new URLSearchParams(raw).entries());
+    if (!verifyAlipayNotify(params)) return sendText(res, 400, "failure");
+
+    const paid = ["TRADE_SUCCESS", "TRADE_FINISHED"].includes(params.trade_status);
+    if (paid) {
+      db.prepare(`
+        UPDATE orders
+        SET status = 'paid', provider_order_id = ?, paid_at = ?, provider_payload = ?
+        WHERE id = ?
+      `).run(
+        params.trade_no || null,
+        new Date().toISOString(),
+        JSON.stringify(params),
+        params.out_trade_no
+      );
+    } else {
+      db.prepare("UPDATE orders SET status = ?, provider_payload = ? WHERE id = ?")
+        .run(params.trade_status || "alipay_notify", JSON.stringify(params), params.out_trade_no);
+    }
+
+    return sendText(res, 200, "success");
+  } catch (error) {
+    return sendText(res, 500, "failure");
   }
 }
 
@@ -336,6 +509,7 @@ http.createServer(async (req, res) => {
   const pathname = new URL(req.url, publicBaseUrl).pathname;
   if (req.method === "POST" && pathname === "/api/applications") return handleApplication(req, res);
   if (req.method === "POST" && pathname === "/api/wechatpay/notify") return handleWechatNotify(req, res);
+  if (req.method === "POST" && pathname === "/api/alipay/notify") return handleAlipayNotify(req, res);
   if (pathname.startsWith("/api/admin/")) return handleAdminApi(req, res);
   if (pathname.startsWith("/api/export/")) return handleExport(req, res);
   if (req.method === "GET") return serveStatic(req, res);
