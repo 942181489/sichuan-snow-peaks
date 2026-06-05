@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sichuan Snow Peaks | 4-Day Autaina & Sawu Expeditions</title>
+  <meta name="description" content="Dramatic 4-day Sichuan snow mountain programs for English-speaking Southeast Asian travelers. Apply for Autaina Peak and Sawu Sacred Mountain with guided itinerary, insurance support, and simple registration.">
+  <style>
+    :root {
+      --ink: #071216;
+      --deep: #0d1b20;
+      --mist: #eef5f7;
+      --line: rgba(255, 255, 255, .18);
+      --text: #eef7f8;
+      --muted: #71838a;
+      --ice: #bfeaf1;
+      --gold: #f0b84b;
+      --fire: #e8563f;
+      --pine: #104b47;
+      --white: #ffffff;
+      --shadow: 0 30px 90px rgba(0, 0, 0, .34);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #f4f7f7;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px clamp(18px, 4vw, 62px);
+      color: var(--white);
+      background: linear-gradient(180deg, rgba(7, 18, 22, .88), rgba(7, 18, 22, .12));
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .34);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .12);
+      font-size: 15px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: rgba(255, 255, 255, .84);
+      font-size: 14px;
+    }
+
+    nav a { text-decoration: none; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--fire);
+      color: var(--white);
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 14px 34px rgba(232, 86, 63, .36);
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, .94);
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 96vh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      padding: 124px clamp(18px, 5vw, 76px) 34px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 70% 20%, rgba(191, 234, 241, .20), transparent 35%),
+        linear-gradient(90deg, rgba(5, 13, 18, .92), rgba(5, 13, 18, .48) 50%, rgba(5, 13, 18, .16)),
+        linear-gradient(180deg, rgba(5, 13, 18, .12), rgba(5, 13, 18, .84)),
+        url("https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=2400&q=90") center / cover;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 160px;
+      background: linear-gradient(180deg, transparent, #071216);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1080px, 100%);
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      color: var(--ice);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 940px;
+      font-size: clamp(42px, 7.4vw, 92px);
+      line-height: .96;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: #e8f2f4;
+      font-size: clamp(17px, 2vw, 23px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .hero-stats {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 54px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: rgba(255, 255, 255, .12);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-stats div {
+      min-height: 104px;
+      padding: 20px;
+      background: rgba(5, 13, 18, .36);
+    }
+
+    .hero-stats strong {
+      display: block;
+      color: var(--gold);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .hero-stats span {
+      display: block;
+      margin-top: 8px;
+      color: #dcebed;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    section {
+      padding: 78px clamp(18px, 5vw, 76px);
+    }
+
+    .dark-section {
+      color: var(--text);
+      background: var(--deep);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 32px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      max-width: 790px;
+      font-size: clamp(31px, 4vw, 56px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 460px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .dark-section .section-head p { color: #aabcc1; }
+
+    .programs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .program {
+      min-height: 430px;
+      padding: 30px;
+      border-radius: 8px;
+      color: var(--white);
+      background:
+        linear-gradient(180deg, rgba(5, 13, 18, .08), rgba(5, 13, 18, .88)),
+        url("https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=1600&q=90") center / cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      box-shadow: var(--shadow);
+      outline: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .program.sawu {
+      background:
+        linear-gradient(180deg, rgba(5, 13, 18, .08), rgba(5, 13, 18, .88)),
+        url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=90") center / cover;
+    }
+
+    .program h3 {
+      margin: 0;
+      font-size: clamp(30px, 3vw, 44px);
+      line-height: 1;
+    }
+
+    .program p {
+      max-width: 560px;
+      margin: 14px 0 0;
+      color: #edf6f5;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      padding: 7px 10px;
+      border: 1px solid rgba(255, 255, 255, .32);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .itinerary-band {
+      background:
+        linear-gradient(180deg, #071216, #102128 42%, #eef5f7 42%);
+      color: var(--white);
+    }
+
+    .itinerary-band .section-head p { color: #b8c8cc; }
+
+    .itinerary {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pitch {
+      position: sticky;
+      top: 92px;
+      padding: 28px;
+      border-radius: 8px;
+      color: var(--white);
+      background:
+        linear-gradient(180deg, rgba(7, 18, 22, .42), rgba(7, 18, 22, .92)),
+        url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=90") center / cover;
+      box-shadow: var(--shadow);
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+    }
+
+    .pitch h3 {
+      margin: 0;
+      font-size: 29px;
+      line-height: 1.08;
+    }
+
+    .pitch p {
+      margin: 12px 0 0;
+      color: #d9e8e9;
+    }
+
+    .price {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .2);
+      color: var(--gold);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .days {
+      display: grid;
+      gap: 14px;
+    }
+
+    .day {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 20px;
+      padding: 24px;
+      border: 1px solid rgba(7, 18, 22, .08);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 18px 42px rgba(7, 18, 22, .08);
+    }
+
+    .day-number {
+      color: var(--fire);
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 13px;
+    }
+
+    .day h3 {
+      margin: 0 0 7px;
+      font-size: 23px;
+      line-height: 1.18;
+    }
+
+    .day p {
+      margin: 0;
+      color: #53676f;
+    }
+
+    .why {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .why-card {
+      padding: 25px;
+      border: 1px solid #dce5e8;
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .why-card .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      background: #dff5f8;
+      color: var(--pine);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .why-card h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+    }
+
+    .why-card p {
+      margin: 0;
+      color: #5c7078;
+    }
+
+    .signup {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 30px;
+      align-items: start;
+      background:
+        linear-gradient(90deg, rgba(7, 18, 22, .90), rgba(7, 18, 22, .55)),
+        url("https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2200&q=90") center / cover;
+      color: var(--white);
+    }
+
+    .signup-copy h2 {
+      margin: 0;
+      font-size: clamp(31px, 4vw, 54px);
+      line-height: 1.05;
+    }
+
+    .signup-copy p {
+      margin: 16px 0 0;
+      color: #d7e8eb;
+      font-size: 17px;
+    }
+
+    .included {
+      margin-top: 24px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .included div {
+      padding: 13px 15px;
+      border-left: 4px solid var(--gold);
+      background: rgba(255, 255, 255, .12);
+      backdrop-filter: blur(10px);
+    }
+
+    form {
+      padding: 24px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .96);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: #31464d;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #c6d4d9;
+      border-radius: 8px;
+      background: #fbfdfd;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .note {
+      margin: 12px 0 0;
+      color: #6a7f86;
+      font-size: 13px;
+    }
+
+    .signup .note { color: #52666e; }
+
+    .payment-choice {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .payment-choice label {
+      display: block;
+      padding: 12px;
+      border: 1px solid #c6d4d9;
+      border-radius: 8px;
+      background: #fbfdfd;
+      cursor: pointer;
+    }
+
+    .payment-choice input {
+      width: auto;
+      min-height: auto;
+      margin-right: 7px;
+    }
+
+    .form-status {
+      display: none;
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #e2f4ed;
+      color: #164e3d;
+      font-weight: 750;
+    }
+
+    .form-status.error {
+      background: #fee9e5;
+      color: #8b2c20;
+    }
+
+    footer {
+      padding: 34px clamp(18px, 5vw, 76px);
+      background: var(--ink);
+      color: #d7e4e7;
+    }
+
+    footer strong { color: var(--white); }
+
+    @media (max-width: 960px) {
+      nav { display: none; }
+      .hero-stats, .programs, .why, .signup, .itinerary { grid-template-columns: 1fr; }
+      .pitch { position: static; min-height: 340px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .itinerary-band { background: linear-gradient(180deg, #071216, #102128 30%, #eef5f7 30%); }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { padding: 12px 16px; }
+      .topbar .button { display: none; }
+      .hero { min-height: 92vh; padding-top: 92px; }
+      .hero-stats div { min-height: auto; }
+      .day { grid-template-columns: 1fr; gap: 8px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .payment-choice { grid-template-columns: 1fr; }
+      section { padding-top: 56px; padding-bottom: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="mark">SN</span> Sichuan Snow Peaks</div>
+    <nav aria-label="Main navigation">
+      <a href="#peaks">Peaks</a>
+      <a href="#itinerary">4-Day Plan</a>
+      <a href="#insurance">Insurance</a>
+      <a href="#apply">Apply</a>
+    </nav>
+    <a class="button" href="#apply">Reserve a Spot</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Real snow mountain expeditions in Sichuan, China</p>
+        <h1>Four days. One serious snow peak. A story your friends will not stop asking about.</h1>
+        <p>Autaina Peak and Sawu Sacred Mountain programs for English-speaking clients from Southeast Asia, with guided logistics, mountain safety briefing, insurance support, and a direct application flow.</p>
+        <div class="hero-actions">
+          <a class="button" href="#itinerary">View the 4-Day Plan</a>
+          <a class="button secondary" href="#apply">Get Dates & Price</a>
+        </div>
+        <div class="hero-stats" aria-label="Expedition highlights">
+          <div><strong>4D</strong><span>Compact itinerary for busy travelers</span></div>
+          <div><strong>2</strong><span>Autaina and Sawu peak options</span></div>
+          <div><strong>EN</strong><span>English coordination before and during trip</span></div>
+          <div><strong>INS</strong><span>Insurance checklist before confirmation</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="peaks" class="dark-section">
+      <div class="section-head">
+        <h2>Real alpine photos, sharper positioning, and a trip that feels premium from the first screen.</h2>
+        <p>The site now sells the feeling clients want: dramatic snow, clear guidance, and a simple way to join without being confused by China mountain logistics.</p>
+      </div>
+      <div class="programs">
+        <article class="program">
+          <h3>Autaina Peak</h3>
+          <p>A compact Sichuan snow mountain objective for fit hikers who want a dramatic guided climb, highland landscapes, and a real summit attempt without a long vacation block.</p>
+          <div class="chips">
+            <span class="chip">Fast alpine plan</span>
+            <span class="chip">Snow route</span>
+            <span class="chip">Summit photos</span>
+          </div>
+        </article>
+        <article class="program sawu">
+          <h3>Sawu Sacred Mountain</h3>
+          <p>A scenic and cultural snow mountain program for travelers who want Tibetan highland atmosphere, strong visuals, and a guided challenge that still feels organized.</p>
+          <div class="chips">
+            <span class="chip">Sacred mountain</span>
+            <span class="chip">Remote scenery</span>
+            <span class="chip">English support</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="itinerary" class="itinerary-band">
+      <div class="section-head">
+        <h2>A high-conversion 4-day expedition plan.</h2>
+        <p>Short enough to attract Southeast Asian customers with limited leave, serious enough to feel like a real snow mountain adventure.</p>
+      </div>
+
+      <div class="itinerary">
+        <aside class="pitch">
+          <h3>Built for travelers who want maximum mountain impact in minimum time.</h3>
+          <p>We compress the route into a focused four-day program: arrival, transfer, mountain preparation, summit attempt, and return planning.</p>
+          <div class="price">Best for strong hikers with basic mountain fitness. Limited group size recommended.</div>
+          <p class="note">Weather, road conditions, permits, guide assessment, and fitness screening may change the final route plan.</p>
+        </aside>
+
+        <div class="days">
+          <article class="day">
+            <div class="day-number">Day 1</div>
+            <div>
+              <h3>Chengdu arrival, welcome briefing, insurance and gear check</h3>
+              <p>Clients land in Chengdu and meet the coordinator. We confirm passport details, emergency contact, insurance coverage, fitness notes, clothing layers, boots, gloves, headlamp, and personal medication. This creates trust before the mountain begins.</p>
+            </div>
+          </article>
+          <article class="day">
+            <div class="day-number">Day 2</div>
+            <div>
+              <h3>Transfer to Sichuan highlands and approach the mountain area</h3>
+              <p>The drive becomes part of the experience: snow peaks, valleys, Tibetan villages, and photo stops. On arrival, guides brief the route, check weather, and prepare the team for an early alpine start.</p>
+            </div>
+          </article>
+          <article class="day">
+            <div class="day-number">Day 3</div>
+            <div>
+              <h3>Base camp movement, snow skills, and summit preparation</h3>
+              <p>Move closer to the peak and practice crampon movement, pacing, hydration, layering, and turnaround rules. The marketing message is simple: this is not a random hike, it is a guided snow mountain climb.</p>
+            </div>
+          </article>
+          <article class="day">
+            <div class="day-number">Day 4</div>
+            <div>
+              <h3>Summit attempt, safe descent, celebration, and return plan</h3>
+              <p>Start before sunrise for the best window. Guides manage safety, timing, summit photos, and descent discipline. After the climb, clients receive next-step support for Chengdu return, hotel extension, or onward flights.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="insurance">
+      <div class="section-head">
+        <h2>Why customers should book with us instead of trying to arrange it alone.</h2>
+        <p>For overseas clients, the product is not only the mountain. It is confidence, English communication, and a clean path from interest to confirmation.</p>
+      </div>
+      <div class="why">
+        <article class="why-card">
+          <div class="icon">OK</div>
+          <h3>Pre-trip screening</h3>
+          <p>We review fitness, prior hiking experience, medical notes, and equipment needs before recommending Autaina, Sawu, or a softer first route.</p>
+        </article>
+        <article class="why-card">
+          <div class="icon">IN</div>
+          <h3>Insurance assistance</h3>
+          <p>Clients receive a checklist for high-altitude activity, emergency medical care, evacuation terms, and travel delay cover before deposit confirmation.</p>
+        </article>
+        <article class="why-card">
+          <div class="icon">GO</div>
+          <h3>Fast registration</h3>
+          <p>The form collects the details needed to qualify serious clients, answer questions quickly, and move them toward date selection and payment.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="apply" class="signup">
+      <div class="signup-copy">
+        <h2>Apply now. Get the best peak, date, and insurance checklist.</h2>
+        <p>Send your details and preferred travel window. Our coordinator will reply with route recommendation, estimated budget, gear list, insurance checklist, and available group dates.</p>
+        <div class="included">
+          <div><strong>Best for:</strong> English-speaking hikers from Singapore, Malaysia, Thailand, Indonesia, Vietnam, and the Philippines.</div>
+          <div><strong>Before payment:</strong> We confirm fitness match, weather expectations, insurance readiness, and realistic summit goals.</div>
+          <div><strong>After booking:</strong> You receive a preparation timeline, packing guide, Chengdu arrival plan, and group communication.</div>
+        </div>
+      </div>
+
+      <form id="application-form" method="post" action="/api/applications">
+        <p id="form-status" class="form-status" role="status"></p>
+        <div class="form-grid">
+          <label>Full name
+            <input type="text" name="name" placeholder="Your name" required>
+          </label>
+          <label>Country / region
+            <input type="text" name="country" placeholder="Singapore, Malaysia, Thailand..." required>
+          </label>
+          <label>Email
+            <input type="email" name="email" placeholder="you@example.com" required>
+          </label>
+          <label>WhatsApp / phone
+            <input type="tel" name="phone" placeholder="+65 / +60 / +66 ..." required>
+          </label>
+          <label>Preferred peak
+            <select name="peak">
+              <option>Help me choose</option>
+              <option>Autaina Peak</option>
+              <option>Sawu Sacred Mountain</option>
+              <option>Both options</option>
+            </select>
+          </label>
+          <label>Travel window
+            <input type="text" name="dates" placeholder="Example: Oct 2026 or flexible">
+          </label>
+          <label class="full">Experience and insurance status
+            <textarea name="message" placeholder="Tell us your hiking/climbing experience, fitness level, and whether you already have high-altitude travel insurance."></textarea>
+          </label>
+          <fieldset class="full" style="border:0;padding:0;margin:0">
+            <legend style="margin-bottom:7px;color:#31464d;font-size:13px;font-weight:850">Next step</legend>
+            <div class="payment-choice">
+              <label><input type="radio" name="paymentOption" value="inquiry" checked> Submit inquiry only</label>
+              <label><input type="radio" name="paymentOption" value="deposit_1500"> Reserve with RMB 1,500</label>
+              <label><input type="radio" name="paymentOption" value="deposit_3500"> Reserve with RMB 3,500</label>
+            </div>
+          </fieldset>
+          <fieldset class="full" style="border:0;padding:0;margin:0">
+            <legend style="margin-bottom:7px;color:#31464d;font-size:13px;font-weight:850">Payment method</legend>
+            <div class="payment-choice">
+              <label><input type="radio" name="paymentProvider" value="manual" checked> Manual confirmation</label>
+              <label><input type="radio" name="paymentProvider" value="wechat_native"> WeChat Pay QR</label>
+              <label><input type="radio" name="paymentProvider" value="alipay_manual"> Alipay company QR</label>
+            </div>
+          </fieldset>
+          <div class="full">
+            <button id="submit-button" class="button" type="submit">Submit Application</button>
+            <p class="note">For a China-registered company, deposits are recorded in our backend database and confirmed through WeChat Pay, Alipay, or bank transfer. Card numbers are never stored here.</p>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Sichuan Snow Peaks</strong><br>
+    English-guided 4-day Autaina Peak and Sawu Sacred Mountain programs for Southeast Asian clients. Final route details, permit requirements, insurance terms, and summit plans are confirmed before each departure.
+  </footer>
+  <script>
+    const applicationForm = document.querySelector("#application-form");
+    const formStatus = document.querySelector("#form-status");
+    const submitButton = document.querySelector("#submit-button");
+
+    const showStatus = (message, isError = false) => {
+      formStatus.textContent = message;
+      formStatus.classList.toggle("error", isError);
+      formStatus.style.display = "block";
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      showStatus("Payment received. We will confirm your expedition details shortly.");
+    } else if (params.get("payment") === "cancelled") {
+      showStatus("Payment was cancelled. Your application is still saved.", true);
+    }
+
+    applicationForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+
+      try {
+        const payload = Object.fromEntries(new FormData(applicationForm).entries());
+        const response = await fetch("/api/applications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.error || "Unable to submit application.");
+        if (result.codeUrl) {
+          showStatus(`Application saved. Order ${result.orderId} for RMB ${result.amountCny}. WeChat Pay QR link: ${result.codeUrl}`);
+          return;
+        }
+
+        applicationForm.reset();
+        showStatus(result.message || "Application saved. We will contact you with dates, price, and insurance guidance.");
+      } catch (error) {
+        showStatus(error.message, true);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit Application";
+      }
+    });
+  </script>
+</body>
+</html>

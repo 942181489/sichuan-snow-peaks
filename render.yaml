@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: sichuan-snow-peaks
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: WECHAT_PAY_MCH_ID
+        sync: false
+      - key: WECHAT_PAY_APP_ID
+        sync: false
+      - key: WECHAT_PAY_CERT_SERIAL_NO
+        sync: false
+      - key: WECHAT_PAY_API_V3_KEY
+        sync: false
+      - key: WECHAT_PAY_PRIVATE_KEY
+        sync: false
+    disk:
+      name: snow-peaks-data
+      mountPath: /data
+      sizeGB: 1

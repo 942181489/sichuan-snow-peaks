@@ -1,0 +1,14 @@
+{
+  "name": "sichuan-snow-peaks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sichuan snow mountain expedition website with application database and China payment order backend.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=25.0.0"
+  }
+}

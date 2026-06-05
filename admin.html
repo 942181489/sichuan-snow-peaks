@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sichuan Snow Peaks Admin</title>
+  <style>
+    :root {
+      --ink: #10212a;
+      --muted: #60717b;
+      --line: #d9e2e7;
+      --bg: #f4f7f7;
+      --white: #fff;
+      --fire: #e8563f;
+      --pine: #104b47;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px clamp(18px, 4vw, 54px);
+      background: #071216;
+      color: var(--white);
+    }
+
+    main { padding: 28px clamp(18px, 4vw, 54px); }
+    h1, h2 { margin: 0; line-height: 1.1; }
+    h1 { font-size: clamp(26px, 4vw, 42px); }
+    h2 { margin: 28px 0 14px; font-size: 24px; }
+
+    .login, .panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 14px 34px rgba(16, 33, 42, .08);
+    }
+
+    .login {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: #31464d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input {
+      min-height: 42px;
+      min-width: 260px;
+      padding: 9px 11px;
+      border: 1px solid #c6d4d9;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    button, .link-button {
+      min-height: 42px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--fire);
+      color: var(--white);
+      font-weight: 850;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .link-button.secondary { background: var(--pine); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #e9f0f2;
+      color: #31464d;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .muted { color: var(--muted); }
+    .status {
+      display: inline-flex;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #e8eff1;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .status.paid { background: #dff3e8; color: #176342; }
+
+    @media (max-width: 800px) {
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr { border-bottom: 1px solid var(--line); }
+      td { border: 0; padding: 8px 10px; }
+      td::before { content: attr(data-label) ": "; font-weight: 850; color: #31464d; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Admin</h1>
+      <div class="muted">Applications, orders, and China payment confirmation</div>
+    </div>
+    <a class="link-button secondary" href="/">View site</a>
+  </header>
+
+  <main>
+    <section class="login">
+      <label>Admin token
+        <input id="token" type="password" placeholder="Default: change-me">
+      </label>
+      <button id="load">Load Dashboard</button>
+      <span id="message" class="muted"></span>
+    </section>
+
+    <div class="actions">
+      <a id="export-apps" class="link-button secondary" href="#">Export applications CSV</a>
+      <a id="export-orders" class="link-button secondary" href="#">Export orders CSV</a>
+    </div>
+
+    <section class="panel">
+      <h2>Applications</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Created</th><th>Name</th><th>Country</th><th>Contact</th><th>Peak</th><th>Dates</th><th>Paid</th>
+          </tr>
+        </thead>
+        <tbody id="applications"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Orders</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Created</th><th>Order</th><th>Client</th><th>Provider</th><th>Amount</th><th>Status</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="orders"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const tokenInput = document.querySelector("#token");
+    const message = document.querySelector("#message");
+    const applicationsBody = document.querySelector("#applications");
+    const ordersBody = document.querySelector("#orders");
+
+    tokenInput.value = localStorage.getItem("snowAdminToken") || "";
+
+    const authHeaders = () => ({ Authorization: `Bearer ${tokenInput.value}` });
+    const cny = (value) => `RMB ${(Number(value || 0) / 100).toFixed(2)}`;
+    const date = (value) => value ? new Date(value).toLocaleString() : "";
+
+    function setExportLinks() {
+      const token = encodeURIComponent(tokenInput.value);
+      document.querySelector("#export-apps").href = `/api/export/applications?token=${token}`;
+      document.querySelector("#export-orders").href = `/api/export/orders?token=${token}`;
+    }
+
+    async function loadDashboard() {
+      localStorage.setItem("snowAdminToken", tokenInput.value);
+      setExportLinks();
+      message.textContent = "Loading...";
+      const response = await fetch("/api/admin/summary", { headers: authHeaders() });
+      const data = await response.json();
+      if (!response.ok) {
+        message.textContent = data.error || "Could not load dashboard.";
+        return;
+      }
+
+      applicationsBody.innerHTML = data.applications.map((app) => `
+        <tr>
+          <td data-label="Created">${date(app.created_at)}</td>
+          <td data-label="Name"><strong>${app.name}</strong><br><span class="muted">${app.id}</span></td>
+          <td data-label="Country">${app.country}</td>
+          <td data-label="Contact">${app.email}<br>${app.phone}</td>
+          <td data-label="Peak">${app.peak || ""}</td>
+          <td data-label="Dates">${app.dates || ""}</td>
+          <td data-label="Paid">${cny(app.paid_cny)}</td>
+        </tr>
+      `).join("");
+
+      ordersBody.innerHTML = data.orders.map((order) => `
+        <tr>
+          <td data-label="Created">${date(order.created_at)}</td>
+          <td data-label="Order"><strong>${order.id}</strong><br><span class="muted">${order.application_id}</span></td>
+          <td data-label="Client">${order.name}<br><span class="muted">${order.email}</span></td>
+          <td data-label="Provider">${order.provider}</td>
+          <td data-label="Amount">${cny(order.amount_cny)}</td>
+          <td data-label="Status"><span class="status ${order.status === "paid" ? "paid" : ""}">${order.status}</span></td>
+          <td data-label="Action">${order.status === "paid" ? "" : `<button data-order="${order.id}">Mark paid</button>`}</td>
+        </tr>
+      `).join("");
+
+      message.textContent = `Loaded ${data.applications.length} applications and ${data.orders.length} orders.`;
+    }
+
+    ordersBody.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-order]");
+      if (!button) return;
+      await fetch(`/api/admin/orders/${button.dataset.order}/mark-paid`, {
+        method: "POST",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: "Confirmed by admin dashboard" })
+      });
+      loadDashboard();
+    });
+
+    document.querySelector("#load").addEventListener("click", loadDashboard);
+    setExportLinks();
+  </script>
+</body>
+</html>
